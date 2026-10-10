@@ -12,7 +12,7 @@
     <div id="hud">
         <div class="stat-group">
             <span>☯️ Cảnh giới: <b id="ui-realm">Phàm Nhân</b></span>
-            <span>⭐ Tu vi: <b id="ui-exp">0</b>/<span id="ui-max-exp">80</span></span>
+            <span>⭐ Tu vi: <b id="ui-exp">0</b>/<span id="ui-max-exp">300</span></span>
             <span>❤️ Khí huyết: <b id="ui-hp">100</b>/<span id="ui-max-hp">100</span></span>
             <span>🔷 Linh lực: <b id="ui-qi">0</b>/<span id="ui-max-qi">0</span></span>
             <span>🪙 Bạc: <b id="ui-silver">15</b></span>
@@ -20,32 +20,45 @@
         </div>
         <div class="hud-btns">
             <button onclick="meditate()">🧘 Bế Quan Tu Luyện</button>
-            <button onclick="toggleBag()">🎒 Trữ Vật Nang</button>
+            <button onclick="toggleBag()">🎒 Trữ Vật Nang (B/C)</button>
         </div>
     </div>
 
     <!-- KHUNG THẾ GIỚI GAME -->
     <div id="viewport">
         <div id="world">
-            <!-- Khu vực Hồ câu cá -->
-            <div id="fishing-lake">
-                <span class="area-tag">Thanh Thủy Đàm (Hồ câu)</span>
+            <!-- Vạch ranh giới bản đồ -->
+            <div id="map-boundary-line">
+                <span class="boundary-label">⬅️ THÔN TRANG AN TOÀN | RỪNG THIÊNG YÊU THÚ ➡️</span>
             </div>
 
-            <!-- NPC Thương nhân Thôn làng -->
+            <!-- Khu vực Hồ câu cá -->
+            <div id="fishing-lake">
+                <span class="area-tag">Thanh Thủy Đàm (Bấm E để câu)</span>
+            </div>
+
+            <!-- Cây Linh Mộc Đốn Gỗ -->
+            <div id="trees-container"></div>
+
+            <!-- NPC Thương Lão Gia -->
             <div id="npc-merchant" class="npc">
                 <div class="npc-tip">Nhấn F để giao dịch</div>
                 <div class="npc-icon">👳‍♂️</div>
                 <div class="npc-name">Thương Lão Gia</div>
             </div>
 
-            <!-- Cơ duyên: Động phủ tiền nhân -->
-            <div id="secret-cave" class="cave-spot">
-                <div class="cave-icon">⛩️</div>
-                <div class="cave-name">Cổ Tu Động Phủ</div>
+            <!-- NPC Trưởng Làng (Có icon dự phòng nếu chưa có ảnh) -->
+            <div id="npc-elder" class="npc" onclick="talkToElder()">
+                <div class="npc-tip">Nhấn F nói chuyện</div>
+                <div class="npc-avatar-box">
+                    <img src="Hinhanh/elder_avatar.png" alt="Trưởng Làng" class="npc-img-avatar" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; font-size:30px; line-height:44px;">👴</div>
+                </div>
+                <div class="npc-name">Trưởng Làng</div>
             </div>
 
-            <!-- Nhân vật chính (sử dụng Spritesheet cắt ô tự động) -->
+            <!-- Nhân vật chính -->
             <div id="player">
                 <div id="player-tag">Phàm Nhân</div>
                 <div id="player-sprite"></div>
@@ -62,41 +75,91 @@
         <div id="minimap-container">
             <div class="minimap-title">LA BÀN BÁT QUÁI</div>
             <canvas id="minimap-canvas" width="160" height="90"></canvas>
-            <div id="minimap-coords">X: 1100 | Y: 720</div>
+            <div id="minimap-coords">X: 480 | Y: 650</div>
         </div>
     </div>
 
     <!-- THANH HƯỚNG DẪN ĐIỀU KHIỂN -->
     <div id="guide-bar">
-        Di chuyển: <b>WASD</b> • Tấn công cận chiến: <b>Chuột Trái</b> • Câu cá: <b>E</b> • Giao dịch: <b>F</b> • Phóng phi kiếm: <b>Q</b> • Túi đồ: <b>B</b>
+        Di chuyển: <b>WASD</b> • Đánh/Đốn gỗ: <b>Chuột Trái</b> • Câu cá: <b>E</b> • Tương tác: <b>F</b> • Phóng kiếm: <b>Q</b> • Túi đồ: <b>B / C</b>
     </div>
 
-    <!-- MODAL TÚI ĐỒ (TRỮ VẬT NANG) -->
-    <div id="bag-modal" class="modal">
-        <div class="modal-box">
-            <div class="modal-title">
-                <h3>🎒 Trữ Vật Nang</h3>
-                <button onclick="toggleBag()">✖</button>
+    <!-- MODAL KHUNG THOẠI HỘI THOẠI VỚI TRƯỞNG LÀNG -->
+    <div id="dialogue-modal" class="modal" onclick="closeDialogue()">
+        <div class="dialogue-box" onclick="event.stopPropagation()">
+            <div class="dialogue-portrait">
+                <img src="Hinhanh/elder_avatar.png" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display:none; font-size:80px; line-height:120px; text-align:center;">👴</div>
             </div>
-            <div id="inventory-list" class="inv-grid"></div>
+            <div class="dialogue-content">
+                <div class="dialogue-name">Trưởng Làng</div>
+                <p id="dialogue-text">"Đạo hữu dừng bước!..."</p>
+                <div class="dialogue-actions" id="dialogue-actions">
+                    <button class="btn-dialogue-ok" onclick="closeDialogue()">Đã hiểu</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- MODAL PHƯỜNG THỊ / THƯƠNG NHÂN -->
+    <!-- MODAL TRỮ VẬT NANG & TRẠNG THÁI NHÂN VẬT -->
+    <div id="bag-modal" class="modal">
+        <div class="modal-box bag-modal-box">
+            <div class="modal-title">
+                <h3>🎒 Trữ Vật Nang & Thuộc Tính Bản Thân</h3>
+                <button onclick="toggleBag()">✖</button>
+            </div>
+            
+            <div class="bag-layout">
+                <!-- Cột trái: Bảng thuộc tính & Trang bị -->
+                <div class="status-panel">
+                    <div class="panel-header">👤 Thuộc Tính</div>
+                    <div class="status-avatar">🥋</div>
+                    <div class="status-row"><span>Cảnh giới:</span> <b id="stat-realm">Phàm Nhân</b></div>
+                    <div class="status-row"><span>Khí huyết:</span> <b id="stat-hp">100/100</b></div>
+                    <div class="status-row"><span>Linh lực:</span> <b id="stat-qi">0/0</b></div>
+                    <div class="status-row"><span>Tổng Công kích:</span> <b id="stat-dmg" style="color:#ff5252">10</b></div>
+                    
+                    <div class="panel-header" style="margin-top: 10px;">🗡️ Đang Trang Bị</div>
+                    <div id="equipped-slot" class="equipped-box">
+                        <span id="equipped-name">Chưa trang bị</span>
+                        <button id="btn-unequip" style="display:none;" onclick="unequipWeapon()">Tháo</button>
+                    </div>
+                </div>
+
+                <!-- Cột phải: 3 Tab vật phẩm -->
+                <div class="inventory-panel">
+                    <div class="inv-tabs">
+                        <button class="tab-btn active" onclick="switchBagTab('weapon')">⚔️ Vũ Khí</button>
+                        <button class="tab-btn" onclick="switchBagTab('material')">🐟 Vật Phẩm</button>
+                        <button class="tab-btn" onclick="switchBagTab('manual')">📜 Bí Kíp</button>
+                    </div>
+                    <div id="inventory-list" class="inv-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TẠP HÓA -->
     <div id="shop-modal" class="modal">
         <div class="modal-box">
             <div class="modal-title">
                 <h3>🏪 Tạp Hóa Thôn Trang</h3>
                 <button onclick="closeShop()">✖</button>
             </div>
-            <p id="shop-desc">Thu mua Linh Ngư đổi lấy Bạc. Bán Cần câu và Bí tịch nhập đạo!</p>
+            <p id="shop-desc">Thu mua Cá & Gỗ đổi lấy Bạc. Bán Cần câu, Đan dược và Binh khí!</p>
             <div class="shop-actions">
-                <button onclick="sellAllResources()" class="btn-sell">💰 Bán hết Cá & Dược liệu</button>
+                <button onclick="sellAllResources()" class="btn-sell">💰 Bán hết Cá & Gỗ</button>
             </div>
             <div id="shop-goods" class="shop-grid"></div>
         </div>
     </div>
 
-    <script src="game.js"></script>
+    <!-- Nạp các file script theo thứ tự logic -->
+    <script src="data.js"></script>
+    <script src="ui.js"></script>
+    <script src="combat.js"></script>
+    <script src="entities.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

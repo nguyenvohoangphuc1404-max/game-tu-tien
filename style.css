@@ -48,7 +48,7 @@ body {
     background: #39636c;
 }
 
-/* THẾ GIỚI 2D & BẢN ĐỒ NỀN */
+/* THẾ GIỚI 2D & BẢN ĐỒ */
 #viewport {
     width: 100vw;
     height: calc(100vh - 48px);
@@ -71,12 +71,37 @@ body {
     left: 0;
 }
 
+/* ĐƯỜNG PHÂN GIỚI BẢN ĐỒ */
+#map-boundary-line {
+    position: absolute;
+    left: 960px;
+    top: 220px;
+    width: 2px;
+    height: 860px;
+    background: repeating-linear-gradient(to bottom, rgba(255, 77, 77, 0.7), rgba(255, 77, 77, 0.7) 12px, transparent 12px, transparent 24px);
+    pointer-events: none;
+    z-index: 15;
+}
+.boundary-label {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #ffca28;
+    border: 1px solid #ff5722;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
 /* KHU VỰC HỒ CÂU CÁ */
 #fishing-lake {
     position: absolute;
-    left: 40px;
+    left: 60px;
     top: 760px;
-    width: 250px;
+    width: 260px;
     height: 250px;
     background: rgba(29, 114, 153, 0.35);
     border: 2px dashed #38a3a5;
@@ -89,16 +114,42 @@ body {
     font-size: 11px;
     background: rgba(0, 0, 0, 0.75);
     color: #8be9fd;
-    padding: 2px 7px;
+    padding: 3px 8px;
     border-radius: 4px;
 }
 
-/* XÓA BỎ HOÀN TOÀN CÁC CÂY EMOJI TRƯỚC ĐÓ */
-#trees-container, .tree-node {
-    display: none !important;
+/* CÂY LINH MỘC */
+.tree-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 42;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+.tree-icon {
+    font-size: 55px;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6));
+}
+.tree-name {
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #a5d6a7;
+    border-radius: 3px;
+    padding: 1px 5px;
+    white-space: nowrap;
+}
+.tree-hp {
+    font-size: 10px;
+    background: rgba(93, 64, 55, 0.9);
+    color: #ffcc80;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
-/* NHÂN VẬT CHÍNH (CẮT SPRITESHEET 3x4 TỪ ẢNH PLAYER.PNG) */
+/* NHÂN VẬT CHÍNH (52x78px) */
 #player {
     position: absolute;
     transform: translate(-50%, -50%);
@@ -111,16 +162,15 @@ body {
 }
 
 #player-sprite {
-    width: 32px;
-    height: 48px;
+    width: 52px;
+    height: 78px;
     background-image: url('Hinhanh/player.png'), url('player.png');
     background-repeat: no-repeat;
-    /* Spritesheet 3 cột x 4 dòng */
     background-size: 300% 400%;
     background-position: 50% 0%;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.65));
     transition: transform 0.05s ease;
 }
 
@@ -130,36 +180,65 @@ body {
     background: rgba(0, 0, 0, 0.85);
     color: #4df5a8;
     border: 1px solid #2e7d58;
-    padding: 1px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
     white-space: nowrap;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
-/* NPC & ĐỘNG PHỦ CƠ DUYÊN */
-.npc, .cave-spot {
+/* NPC THƯƠNG NHÂN & TRƯỞNG LÀNG */
+.npc {
     position: absolute;
     transform: translate(-50%, -50%);
     text-align: center;
     cursor: pointer;
     z-index: 40;
 }
-.npc-icon, .cave-icon { font-size: 40px; }
-.npc-name, .cave-name {
-    font-size: 11px;
+.npc-icon { font-size: 44px; }
+.npc-name {
+    font-size: 12px;
     background: rgba(0,0,0,0.85);
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 2px 8px;
+    border-radius: 4px;
     color: #ffd700;
+    white-space: nowrap;
 }
 .npc-tip {
     font-size: 10px;
     background: #ffeb3b;
     color: #000;
-    padding: 1px 5px;
+    padding: 1px 6px;
     border-radius: 6px;
     font-weight: bold;
     margin-bottom: 2px;
+}
+
+/* AVATAR TRƯỞNG LÀNG TRÊN MAP */
+.npc-avatar-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 4px 6px rgba(0,0,0,0.8);
+    overflow: hidden;
+    margin: 0 auto 3px auto;
+    background: #253335;
+    animation: pulseBorder 2.5s infinite alternate;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.npc-img-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+}
+
+@keyframes pulseBorder {
+    0% { border-color: #ffd700; box-shadow: 0 0 6px #ffd700; }
+    100% { border-color: #4df5a8; box-shadow: 0 0 14px #4df5a8; }
 }
 
 /* QUÁI VẬT & PHI KIẾM */
@@ -169,24 +248,35 @@ body {
     text-align: center;
     z-index: 45;
 }
-.monster-icon { font-size: 34px; }
+.monster-icon { 
+    font-size: 38px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+}
 .monster-hp {
-    font-size: 9px;
-    background: rgba(180, 0, 0, 0.85);
-    padding: 1px 4px;
+    font-size: 10px;
+    background: rgba(180, 0, 0, 0.9);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.monster-name {
+    font-size: 10px;
+    background: rgba(0,0,0,0.7);
+    color: #ff8a80;
     border-radius: 2px;
+    padding: 0 4px;
 }
 
 .projectile {
     position: absolute;
     transform: translate(-50%, -50%);
-    font-size: 26px;
+    font-size: 28px;
     z-index: 60;
     pointer-events: none;
-    filter: drop-shadow(0 0 8px #00e5ff);
+    filter: drop-shadow(0 0 10px #00e5ff);
 }
 
-/* HIỆU ỨNG CHỮ NỔI */
 .float-text {
     position: absolute;
     transform: translate(-50%, -50%);
@@ -201,7 +291,7 @@ body {
     100% { opacity: 0; transform: translate(-50%, -45px); }
 }
 
-/* BẢN ĐỒ MINIMAP */
+/* LA BÀN BÁT QUÁI (MINIMAP) */
 #minimap-container {
     position: absolute;
     top: 15px;
@@ -236,14 +326,13 @@ body {
     font-family: monospace;
 }
 
-/* HƯỚNG DẪN & MODAL */
 #guide-bar {
     position: absolute;
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0,0,0,0.85);
-    padding: 6px 16px;
+    padding: 6px 18px;
     border-radius: 20px;
     font-size: 12px;
     color: #ccc;
@@ -251,6 +340,7 @@ body {
     pointer-events: none;
 }
 
+/* MODAL CHUNG */
 .modal {
     display: none;
     position: fixed;
@@ -265,7 +355,7 @@ body {
     background: #1b2628;
     border: 2px solid #4d7a82;
     border-radius: 8px;
-    width: 380px;
+    width: 400px;
     padding: 15px;
 }
 .modal-title {
@@ -282,15 +372,268 @@ body {
     font-size: 16px;
     cursor: pointer;
 }
-.inv-grid, .shop-grid {
+
+/* KHUNG THOẠI HỘI THOẠI TRƯỞNG LÀNG */
+.dialogue-box {
+    background: linear-gradient(135deg, rgba(22, 32, 34, 0.96), rgba(13, 20, 22, 0.98));
+    border: 2px solid #64b5f6;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(100, 181, 246, 0.3);
+    border-radius: 12px;
+    width: 620px;
+    max-width: 92vw;
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    align-items: center;
+}
+
+.dialogue-portrait {
+    width: 125px;
+    height: 125px;
+    min-width: 125px;
+    border-radius: 8px;
+    border: 2px solid #ffd700;
+    overflow: hidden;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialogue-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+}
+
+.dialogue-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.dialogue-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 4px;
+}
+
+#dialogue-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #e0f2f1;
+}
+
+.dialogue-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.btn-dialogue-ok {
+    background: #26a69a;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: 0.15s;
+}
+.btn-dialogue-ok:hover {
+    background: #2bbbad;
+}
+
+/* MODAL TÚI ĐỒ & BẢNG STATUS (CỘT ĐÔI & TABS) */
+.bag-modal-box {
+    width: 680px !important;
+    max-width: 95vw;
+}
+
+.bag-layout {
+    display: flex;
+    gap: 15px;
+    margin-top: 12px;
+}
+
+/* Cột trái: Status */
+.status-panel {
+    width: 230px;
+    background: #141f21;
+    border: 1px solid #2d454a;
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.panel-header {
+    font-size: 12px;
+    font-weight: bold;
+    color: #4df5a8;
+    border-bottom: 1px dashed #2d454a;
+    padding-bottom: 4px;
+}
+
+.status-avatar {
+    font-size: 34px;
+    text-align: center;
+    background: #1d2c2f;
+    border-radius: 6px;
+    padding: 4px 0;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #bbb;
+}
+.status-row b { color: #52e3e6; }
+
+.equipped-box {
+    background: #1d2d30;
+    border: 1px solid #3b5c63;
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: #ffd700;
+}
+
+.equipped-box button {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+/* Cột phải: Tabs & Danh sách vật phẩm */
+.inventory-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.inv-tabs {
+    display: flex;
+    gap: 6px;
+    border-bottom: 2px solid #2d454a;
+    padding-bottom: 6px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: #203033;
+    color: #bbb;
+    border: 1px solid #30494f;
+    padding: 6px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: 0.15s;
+}
+
+.tab-btn.active, .tab-btn:hover {
+    background: #345c63;
+    color: #ffd700;
+    border-color: #4df5a8;
+}
+
+.inv-grid {
+    flex: 1;
+    min-height: 250px;
+    max-height: 280px;
+    overflow-y: auto;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.inv-item {
+    background: #203134;
+    border: 1px solid #2f494f;
+    border-radius: 4px;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.inv-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.inv-item-desc {
+    font-size: 10.5px;
+    color: #8fa5a8;
+}
+
+.inv-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-item-action {
+    background: #00bcd4;
+    color: #000;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 11px;
+    cursor: pointer;
+}
+.btn-item-action:hover {
+    background: #26c6da;
+}
+
+/* NÚT BÁN / HỦY VẬT PHẨM LẤY BẠC TRONG TÚI */
+.btn-discard {
+    background: #424242;
+    color: #ffd54f;
+    border: 1px solid #ffb300;
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 10.5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.15s;
+    white-space: nowrap;
+}
+.btn-discard:hover {
+    background: #d32f2f;
+    color: #fff;
+    border-color: #f44336;
+}
+
+/* PHƯỜNG THỊ */
+.shop-grid {
     display: flex;
     flex-direction: column;
     gap: 8px;
     margin-top: 12px;
-    max-height: 240px;
+    max-height: 250px;
     overflow-y: auto;
 }
-.inv-item, .shop-item {
+.shop-item {
     background: #243538;
     padding: 8px;
     border-radius: 4px;
