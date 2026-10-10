@@ -36,6 +36,7 @@ function switchMap(targetMapId, spawnX, spawnY) {
     }, 400);
 }
 
+// Render các thực thể: Gắn skin hoạt ảnh GIF cho Sói
 function renderWorldObjects() {
     if ($("npc-merchant")) {
         $("npc-merchant").style.left = `${merchant.x}px`;
@@ -59,26 +60,42 @@ function renderWorldObjects() {
     }
 
     if ($("monsters-container")) {
-        $("monsters-container").innerHTML = monsters.map(m => `
-            <div id="monster-${m.id}" class="monster-node" style="left:${m.x}px; top:${m.y}px; display:${m.hp > 0 ? 'block' : 'none'};">
-                <div class="monster-name">${m.name}</div>
-                <div class="monster-hp" id="mhp-${m.id}">${m.hp}/${m.maxHp}</div>
-                <div class="monster-icon">${m.icon}</div>
-            </div>
-        `).join("");
+        $("monsters-container").innerHTML = monsters.map(m => {
+            const isWolf = m.name.includes("Dã Lang");
+            const visualHtml = isWolf
+                ? `<div id="m-skin-${m.id}" class="wolf-skin wolf-idle"></div>`
+                : `<div class="monster-icon">${m.icon}</div>`;
+
+            return `
+                <div id="monster-${m.id}" class="monster-node" style="left:${m.x}px; top:${m.y}px; display:${m.hp > 0 ? 'block' : 'none'};">
+                    <div class="monster-name">${m.name}</div>
+                    <div class="monster-hp" id="mhp-${m.id}">${m.hp}/${m.maxHp}</div>
+                    ${visualHtml}
+                </div>
+            `;
+        }).join("");
     }
 }
 
+// AI quái vật: Tự động đổi hành động (Idle / Run / Attack) và quay mặt trái/phải
 function updateMonsters(dt) {
     monsters.forEach(m => {
         if (m.hp <= 0) return;
 
         const mEl = $(`monster-${m.id}`);
+        const skinEl = $(`m-skin-${m.id}`);
         const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
         const canAggro = currentMapId !== "town" || (player.x >= BOUNDARY_X - 20);
 
         if (canAggro && distToPlayer < m.aggroDist) {
-            if (distToPlayer < 45) {
+            // Sói gốc quay mặt sang trái: đi sang trái giữ scaleX(1), đi sang phải lật scaleX(-1)
+            const dirX = player.x < m.x ? 1 : -1;
+            if (skinEl) skinEl.style.transform = `scaleX(${dirX})`;
+
+            if (distToPlayer < 55) {
+                // Áp sát cắn: chuyển sang hoạt ảnh Attack
+                if (skinEl) skinEl.className = "wolf-skin wolf-attack";
+
                 player.hp = Math.max(0, player.hp - m.dmg * dt);
                 showFloatText(player.x, player.y - 20, `-${Math.round(m.dmg * dt * 10)}`, "#ff1744");
                 updateHUD();
@@ -89,6 +106,9 @@ function updateMonsters(dt) {
                     updateHUD();
                 }
             } else {
+                // Đang đuổi theo người chơi: chuyển sang hoạt ảnh Run
+                if (skinEl) skinEl.className = "wolf-skin wolf-run";
+
                 const angle = Math.atan2(player.y - m.y, player.x - m.x);
                 let nextX = m.x + Math.cos(angle) * m.speed * dt;
                 let nextY = m.y + Math.sin(angle) * m.speed * dt;
@@ -100,11 +120,20 @@ function updateMonsters(dt) {
                 }
             }
         } else {
+            // Tuần tra hoặc quay về tổ
             const distToHome = Math.hypot(m.homeX - m.x, m.homeY - m.y);
             if (distToHome > 30) {
+                if (skinEl) {
+                    skinEl.className = "wolf-skin wolf-run";
+                    const dirHome = m.homeX < m.x ? 1 : -1;
+                    skinEl.style.transform = `scaleX(${dirHome})`;
+                }
                 const angle = Math.atan2(m.homeY - m.y, m.homeX - m.x);
                 m.x += Math.cos(angle) * (m.speed * 0.5) * dt;
                 m.y += Math.sin(angle) * (m.speed * 0.5) * dt;
+            } else {
+                // Đứng yên: chuyển sang hoạt ảnh Idle
+                if (skinEl) skinEl.className = "wolf-skin wolf-idle";
             }
         }
 
@@ -148,7 +177,6 @@ function drawMinimap() {
             ctx.fill();
         });
 
-        // NPC
         ctx.fillStyle = "#ffd700";
         ctx.beginPath();
         ctx.arc(merchant.x * scaleX, merchant.y * scaleY, 3.5, 0, Math.PI * 2);
