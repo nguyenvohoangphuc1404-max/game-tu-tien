@@ -1,0 +1,316 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background: #0f1416;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+/* THANH TRẠNG THÁI TRÊN CÙNG */
+#hud {
+    height: 48px;
+    background: #1b2426;
+    border-bottom: 2px solid #3c5357;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 13px;
+    position: relative;
+    z-index: 1000;
+}
+.stat-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+.stat-group b { color: #52e3e6; }
+
+.hud-btns button {
+    background: #28444a;
+    color: #ffd700;
+    border: 1px solid #457882;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: background 0.15s;
+}
+.hud-btns button:hover {
+    background: #39636c;
+}
+
+/* THẾ GIỚI 2D & BẢN ĐỒ NỀN */
+#viewport {
+    width: 100vw;
+    height: calc(100vh - 48px);
+    overflow: hidden;
+    position: relative;
+    background: #25282a;
+}
+
+#world {
+    width: 1920px;
+    height: 1080px;
+    background-image: url('Hinhanh/town_map.png'), url('town_map.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* KHU VỰC HỒ CÂU CÁ */
+#fishing-lake {
+    position: absolute;
+    left: 40px;
+    top: 760px;
+    width: 250px;
+    height: 250px;
+    background: rgba(29, 114, 153, 0.35);
+    border: 2px dashed #38a3a5;
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.area-tag {
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #8be9fd;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+/* XÓA BỎ HOÀN TOÀN CÁC CÂY EMOJI TRƯỚC ĐÓ */
+#trees-container, .tree-node {
+    display: none !important;
+}
+
+/* NHÂN VẬT CHÍNH (CẮT SPRITESHEET 3x4 TỪ ẢNH PLAYER.PNG) */
+#player {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    z-index: 50;
+    pointer-events: none;
+}
+
+#player-sprite {
+    width: 32px;
+    height: 48px;
+    background-image: url('Hinhanh/player.png'), url('player.png');
+    background-repeat: no-repeat;
+    /* Spritesheet 3 cột x 4 dòng */
+    background-size: 300% 400%;
+    background-position: 50% 0%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+    transition: transform 0.05s ease;
+}
+
+#player-tag {
+    font-size: 11px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.85);
+    color: #4df5a8;
+    border: 1px solid #2e7d58;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-bottom: 2px;
+}
+
+/* NPC & ĐỘNG PHỦ CƠ DUYÊN */
+.npc, .cave-spot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 40;
+}
+.npc-icon, .cave-icon { font-size: 40px; }
+.npc-name, .cave-name {
+    font-size: 11px;
+    background: rgba(0,0,0,0.85);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #ffd700;
+}
+.npc-tip {
+    font-size: 10px;
+    background: #ffeb3b;
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+/* QUÁI VẬT & PHI KIẾM */
+.monster-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 45;
+}
+.monster-icon { font-size: 34px; }
+.monster-hp {
+    font-size: 9px;
+    background: rgba(180, 0, 0, 0.85);
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.projectile {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 26px;
+    z-index: 60;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px #00e5ff);
+}
+
+/* HIỆU ỨNG CHỮ NỔI */
+.float-text {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 150;
+    animation: floatUp 0.8s ease-out forwards;
+}
+@keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -45px); }
+}
+
+/* BẢN ĐỒ MINIMAP */
+#minimap-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(16, 26, 28, 0.9);
+    border: 2px solid #4d7a82;
+    border-radius: 8px;
+    padding: 6px;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+    pointer-events: none;
+}
+.minimap-title {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    color: #ffd700;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+}
+#minimap-canvas {
+    display: block;
+    background: #1c2624;
+    border: 1px solid #344c50;
+    border-radius: 4px;
+}
+#minimap-coords {
+    font-size: 9px;
+    text-align: center;
+    color: #8be9fd;
+    margin-top: 3px;
+    font-family: monospace;
+}
+
+/* HƯỚNG DẪN & MODAL */
+#guide-bar {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #ccc;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.modal-box {
+    background: #1b2628;
+    border: 2px solid #4d7a82;
+    border-radius: 8px;
+    width: 380px;
+    padding: 15px;
+}
+.modal-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3d585e;
+    padding-bottom: 8px;
+}
+.modal-title button {
+    background: transparent;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+.inv-grid, .shop-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+.inv-item, .shop-item {
+    background: #243538;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+.btn-sell, .btn-buy {
+    background: #ff9800;
+    color: #000;
+    border: none;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-sell {
+    width: 100%;
+    margin-top: 10px;
+    background: #4caf50;
+    color: #fff;
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phàm Nhân Tu Tiên Lộ 2D</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- THANH TRẠNG THÁI TU TIÊN (HUD) -->
+    <div id="hud">
+        <div class="stat-group">
+            <span>☯️ Cảnh giới: <b id="ui-realm">Phàm Nhân</b></span>
+            <span>⭐ Tu vi: <b id="ui-exp">0</b>/<span id="ui-max-exp">80</span></span>
+            <span>❤️ Khí huyết: <b id="ui-hp">100</b>/<span id="ui-max-hp">100</span></span>
+            <span>🔷 Linh lực: <b id="ui-qi">0</b>/<span id="ui-max-qi">0</span></span>
+            <span>🪙 Bạc: <b id="ui-silver">15</b></span>
+            <span>💎 Linh thạch: <b id="ui-stones">0</b></span>
+        </div>
+        <div class="hud-btns">
+            <button onclick="meditate()">🧘 Bế Quan Tu Luyện</button>
+            <button onclick="toggleBag()">🎒 Trữ Vật Nang</button>
+        </div>
+    </div>
+
+    <!-- KHUNG THẾ GIỚI GAME -->
+    <div id="viewport">
+        <div id="world">
+            <!-- Khu vực Hồ câu cá -->
+            <div id="fishing-lake">
+                <span class="area-tag">Thanh Thủy Đàm (Hồ câu)</span>
+            </div>
+
+            <!-- NPC Thương nhân Thôn làng -->
+            <div id="npc-merchant" class="npc">
+                <div class="npc-tip">Nhấn F để giao dịch</div>
+                <div class="npc-icon">👳‍♂️</div>
+                <div class="npc-name">Thương Lão Gia</div>
+            </div>
+
+            <!-- Cơ duyên: Động phủ tiền nhân -->
+            <div id="secret-cave" class="cave-spot">
+                <div class="cave-icon">⛩️</div>
+                <div class="cave-name">Cổ Tu Động Phủ</div>
+            </div>
+
+            <!-- Nhân vật chính (sử dụng Spritesheet cắt ô tự động) -->
+            <div id="player">
+                <div id="player-tag">Phàm Nhân</div>
+                <div id="player-sprite"></div>
+            </div>
+
+            <!-- Quái vật / Yêu thú -->
+            <div id="monsters-container"></div>
+
+            <!-- Đạn / Phi kiếm bay -->
+            <div id="projectiles-container"></div>
+        </div>
+
+        <!-- BẢN ĐỒ MINIMAP BÁT QUÁI -->
+        <div id="minimap-container">
+            <div class="minimap-title">LA BÀN BÁT QUÁI</div>
+            <canvas id="minimap-canvas" width="160" height="90"></canvas>
+            <div id="minimap-coords">X: 1100 | Y: 720</div>
+        </div>
+    </div>
+
+    <!-- THANH HƯỚNG DẪN ĐIỀU KHIỂN -->
+    <div id="guide-bar">
+        Di chuyển: <b>WASD</b> • Tấn công cận chiến: <b>Chuột Trái</b> • Câu cá: <b>E</b> • Giao dịch: <b>F</b> • Phóng phi kiếm: <b>Q</b> • Túi đồ: <b>B</b>
+    </div>
+
+    <!-- MODAL TÚI ĐỒ (TRỮ VẬT NANG) -->
+    <div id="bag-modal" class="modal">
+        <div class="modal-box">
+            <div class="modal-title">
+                <h3>🎒 Trữ Vật Nang</h3>
+                <button onclick="toggleBag()">✖</button>
+            </div>
+            <div id="inventory-list" class="inv-grid"></div>
+        </div>
+    </div>
+
+    <!-- MODAL PHƯỜNG THỊ / THƯƠNG NHÂN -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-box">
+            <div class="modal-title">
+                <h3>🏪 Tạp Hóa Thôn Trang</h3>
+                <button onclick="closeShop()">✖</button>
+            </div>
+            <p id="shop-desc">Thu mua Linh Ngư đổi lấy Bạc. Bán Cần câu và Bí tịch nhập đạo!</p>
+            <div class="shop-actions">
+                <button onclick="sellAllResources()" class="btn-sell">💰 Bán hết Cá & Dược liệu</button>
+            </div>
+            <div id="shop-goods" class="shop-grid"></div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
