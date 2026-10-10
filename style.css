@@ -672,10 +672,10 @@ body {
     transition: transform 0.1s ease;
 }
 
-/* SKIN SÓI HOẠT ẢNH ĐỘNG 2D */
+/* ==================== SKIN SÓI HOẠT ẢNH ĐỘNG 2D ==================== */
 .wolf-skin {
-    width: 210px;            /* Tăng bề ngang sói thường to bự rõ nét */
-    height: 150px;           /* Chiều cao tương ứng */
+    width: 210px;
+    height: 150px;
     margin: 0 auto;
     background-color: transparent !important;
     background-size: contain;
@@ -694,15 +694,24 @@ body {
     filter: drop-shadow(0 0 16px rgba(255, 23, 68, 0.7)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.85)) !important;
 }
 
-/* Các trạng thái hoạt ảnh GIF */
+/* Các trạng thái hoạt ảnh GIF (Tương thích URL web có khoảng trắng và không khoảng trắng) */
 .wolf-idle {
-    background-image: url('Hinhanh/Lobo Gifs/Lobo Animations Idlle.gif'), url('Lobo Gifs/Lobo Animations Idlle.gif');
+    background-image: 
+        url('Hinhanh/Lobo%20Gifs/Lobo%20Animations%20Idlle.gif'),
+        url('Hinhanh/Lobo Gifs/Lobo Animations Idlle.gif'),
+        url('Lobo Gifs/Lobo Animations Idlle.gif');
 }
 
 .wolf-run {
-    background-image: url('Hinhanh/Lobo Gifs/Lobo Animations Run.gif'), url('Lobo Gifs/Lobo Animations Run.gif');
+    background-image: 
+        url('Hinhanh/Lobo%20Gifs/Lobo%20Animations%20Run.gif'),
+        url('Hinhanh/Lobo Gifs/Lobo Animations Run.gif'),
+        url('Lobo Gifs/Lobo Animations Run.gif');
 }
 
 .wolf-attack {
-    background-image: url('Hinhanh/Lobo Gifs/Lobo Animations Attack.gif'), url('Lobo Gifs/Lobo Animations Attack.gif');
+    background-image: 
+        url('Hinhanh/Lobo%20Gifs/Lobo%20Animations%20Attack.gif'),
+        url('Hinhanh/Lobo Gifs/Lobo Animations Attack.gif'),
+        url('Lobo Gifs/Lobo Animations Attack.gif');
 }

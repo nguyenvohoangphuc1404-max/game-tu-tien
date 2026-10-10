@@ -36,7 +36,7 @@ function switchMap(targetMapId, spawnX, spawnY) {
     }, 400);
 }
 
-// Render các thực thể: Gắn skin hoạt ảnh GIF cho Sói
+// Render các thực thể: Chuẩn hóa nhận diện Sói thường & Sói Boss
 function renderWorldObjects() {
     if ($("npc-merchant")) {
         $("npc-merchant").style.left = `${merchant.x}px`;
@@ -61,9 +61,13 @@ function renderWorldObjects() {
 
     if ($("monsters-container")) {
         $("monsters-container").innerHTML = monsters.map(m => {
-            const isWolf = m.name.includes("Dã Lang");
+            // Nhận diện sói thông minh qua tên hoặc icon
+            const mNameLower = (m.name || "").toLowerCase();
+            const isWolf = mNameLower.includes("lang") || mNameLower.includes("sói") || m.icon === "🐺";
+            const isBoss = mNameLower.includes("đầu đàn") || mNameLower.includes("boss");
+
             const visualHtml = isWolf
-                ? `<div id="m-skin-${m.id}" class="wolf-skin wolf-idle"></div>`
+                ? `<div id="m-skin-${m.id}" class="wolf-skin wolf-idle ${isBoss ? 'wolf-boss-skin' : ''}"></div>`
                 : `<div class="monster-icon">${m.icon}</div>`;
 
             return `
@@ -86,15 +90,15 @@ function updateMonsters(dt) {
         const skinEl = $(`m-skin-${m.id}`);
         const distToPlayer = Math.hypot(player.x - m.x, player.y - m.y);
         const canAggro = currentMapId !== "town" || (player.x >= BOUNDARY_X - 20);
+        const isBoss = (m.name || "").toLowerCase().includes("đầu đàn");
 
         if (canAggro && distToPlayer < m.aggroDist) {
-            // Sói gốc quay mặt sang trái: đi sang trái giữ scaleX(1), đi sang phải lật scaleX(-1)
             const dirX = player.x < m.x ? 1 : -1;
             if (skinEl) skinEl.style.transform = `scaleX(${dirX})`;
 
-            if (distToPlayer < 55) {
-                // Áp sát cắn: chuyển sang hoạt ảnh Attack
-                if (skinEl) skinEl.className = "wolf-skin wolf-attack";
+            if (distToPlayer < 60) {
+                // Áp sát cắn: Chuyển hoạt ảnh Attack
+                if (skinEl) skinEl.className = `wolf-skin wolf-attack ${isBoss ? 'wolf-boss-skin' : ''}`;
 
                 player.hp = Math.max(0, player.hp - m.dmg * dt);
                 showFloatText(player.x, player.y - 20, `-${Math.round(m.dmg * dt * 10)}`, "#ff1744");
@@ -106,8 +110,8 @@ function updateMonsters(dt) {
                     updateHUD();
                 }
             } else {
-                // Đang đuổi theo người chơi: chuyển sang hoạt ảnh Run
-                if (skinEl) skinEl.className = "wolf-skin wolf-run";
+                // Đuổi theo người chơi: Chuyển hoạt ảnh Run
+                if (skinEl) skinEl.className = `wolf-skin wolf-run ${isBoss ? 'wolf-boss-skin' : ''}`;
 
                 const angle = Math.atan2(player.y - m.y, player.x - m.x);
                 let nextX = m.x + Math.cos(angle) * m.speed * dt;
@@ -124,7 +128,7 @@ function updateMonsters(dt) {
             const distToHome = Math.hypot(m.homeX - m.x, m.homeY - m.y);
             if (distToHome > 30) {
                 if (skinEl) {
-                    skinEl.className = "wolf-skin wolf-run";
+                    skinEl.className = `wolf-skin wolf-run ${isBoss ? 'wolf-boss-skin' : ''}`;
                     const dirHome = m.homeX < m.x ? 1 : -1;
                     skinEl.style.transform = `scaleX(${dirHome})`;
                 }
@@ -132,8 +136,8 @@ function updateMonsters(dt) {
                 m.x += Math.cos(angle) * (m.speed * 0.5) * dt;
                 m.y += Math.sin(angle) * (m.speed * 0.5) * dt;
             } else {
-                // Đứng yên: chuyển sang hoạt ảnh Idle
-                if (skinEl) skinEl.className = "wolf-skin wolf-idle";
+                // Đứng yên: Chuyển hoạt ảnh Idle
+                if (skinEl) skinEl.className = `wolf-skin wolf-idle ${isBoss ? 'wolf-boss-skin' : ''}`;
             }
         }
 
